@@ -172,11 +172,11 @@ def process_filtered_stocks(filtered_stocks_list, all_stocks):
 
 if __name__ == "__main__":
     # Define file paths
-    mid_stocks_list_path = Path('***') # path of 'mid_stocks_list.feather'
-    all_stocks_daily_path = Path('***') # path of 'all_stocks_daily.parquet'
-    filtered_stocks_list_path = Path('***') # path of 'filtered_stocks_list.parquet'
-    filtered_stocks_data_path = Path('***') # path of 'filtered_stocks_data.parquet'
-    all_stocks_path = Path('***') # path of 'all_stocks.parquet'
+    all_stocks_path = Path('***') # exit path of 'all_stocks.parquet'
+    mid_stocks_list_path = Path('***') # exit path of 'mid_stocks_list.feather'
+    all_stocks_daily_path = Path('***') # exist path of 'all_stocks_daily.parquet'
+    filtered_stocks_list_path = Path('***') # construct path of 'filtered_stocks_list.parquet'
+    filtered_stocks_data_path = Path('***') # construct path of 'filtered_stocks_data.parquet'
     
     # Define parameters
     start_date, end_date = '2023-10-01', '2024-10-14'
