@@ -96,9 +96,9 @@ def combine_stock_data(
     return all_stocks.sort_index(), all_stocks_daily.sort_index()
 
 if __name__ == "__main__":
-    data_folder = Path('***') # path of 'k_data/永豐'
-    all_stocks_path = Path('***') # path of 'all_stocks.parquet'
-    all_stocks_daily_path = Path('***') # path of 'all_stocks_daily.parquet'
+    data_folder = Path('***') # exist path of 'k_data/永豐'
+    all_stocks_path = Path('***') # construct path of 'all_stocks.parquet'
+    all_stocks_daily_path = Path('***') # construct path of 'all_stocks_daily.parquet'
     start_date, end_date = '2021-01-01', '2024-10-14'
 
     # Combine all stock data into one DataFrame
