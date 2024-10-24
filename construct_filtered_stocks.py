@@ -136,6 +136,9 @@ def process_stock_data_for_day(day, stock_code, all_stocks):
 
 def process_filtered_stocks(filtered_stocks_list, all_stocks):
     filtered_stocks_data = []
+
+    #########
+    # no parellel
     for day in filtered_stocks_list.index:
         print(f"Processing day: {day}")
         for stock_code in filtered_stocks_list.loc[day, 'stock_list']:
@@ -145,8 +148,10 @@ def process_filtered_stocks(filtered_stocks_list, all_stocks):
             stock_data['stock_code'] = stock_code
             filtered_stocks_data.append(stock_data)
     filtered_stocks_data = pd.concat(filtered_stocks_data, ignore_index=True)
+    #########
     
     # #######
+    # parellel
     # # 定義要處理的任務
     # tasks = []
     # for day in filtered_stocks_list.index:
