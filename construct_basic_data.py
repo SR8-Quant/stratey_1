@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 from pathlib import Path
 from typing import Tuple
@@ -58,6 +59,7 @@ def combine_stock_data(
 
     all_stocks_daily = []
     all_stocks = []
+    
     for csv_file in data_folder.glob('*.csv'):
         stock_code = csv_file.stem  # Use file stem as the stock code
         stock_df = load_stock_data(stock_code, csv_file)
@@ -68,17 +70,36 @@ def combine_stock_data(
         all_stocks.append(stock_df)
         all_stocks_daily.append(stock_df_daily)
         print(f"Processing stock_code: {stock_code}")
+    
+    # #############
+    # def process_stock(csv_file):
+    #     stock_code = csv_file.stem  # Use file stem as the stock code
+    #     stock_df = load_stock_data(stock_code, csv_file)
+    #     stock_df_daily = resample_to_daily(stock_code, stock_df, start_date, end_date)
+    #     stock_df['stock_code'] = stock_code
+    #     stock_df.set_index('stock_code', append=True, inplace=True)
+    #     stock_df = stock_df.reorder_levels(['stock_code', stock_df.index.names[0]])
+    #     return stock_df, stock_df_daily
+    
+    # # 使用 ThreadPoolExecutor 進行並行處理
+    # with ThreadPoolExecutor() as executor:
+    #     results = list(executor.map(process_stock, data_folder.glob('*.csv')))
+    
+    # for stock_df, stock_df_daily in results:
+    #     all_stocks.append(stock_df)
+    #     all_stocks_daily.append(stock_df_daily)
+    # #############
 
     all_stocks = pd.concat(all_stocks, axis=0)
     all_stocks_daily = pd.concat(all_stocks_daily, axis=0)
     
-    return all_stocks, all_stocks_daily
+    return all_stocks.sort_index(), all_stocks_daily.sort_index()
 
 if __name__ == "__main__":
     data_folder = Path('***') # path of 'k_data/永豐'
     all_stocks_path = Path('***') # path of 'all_stocks.parquet'
     all_stocks_daily_path = Path('***') # path of 'all_stocks_daily.parquet'
-    start_date, end_date = '2022-01-01', '2024-10-14'
+    start_date, end_date = '2021-01-01', '2024-10-14'
 
     # Combine all stock data into one DataFrame
     all_stocks, all_stocks_daily = combine_stock_data(data_folder, start_date, end_date)
