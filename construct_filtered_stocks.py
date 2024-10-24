@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 from typing import List
 import pandas_market_calendars as mcal
+from concurrent.futures import ThreadPoolExecutor
 
 def filter_stocks_by_list(
         stocks_df: pd.DataFrame,
@@ -126,16 +127,57 @@ def criterion_to_list(
     
     return result_df
 
-if __name__ == "__main__":
-    mid_stocks_list_path = Path('***') # path of 'mid_stocks_list.feather'
-    all_stocks_daily_path = Path('***') # path of 'all_stocks_daily.parquet'
-    filtered_stocks_list_path = Path('***') # path of 'filtered_stocks_list.parquet'
-    filtered_stocks_data_path = Path('***') # path of 'filtered_stocks_data.parquet'
-    all_stocks_path = Path('***') # path of 'all_stocks.parquet'
+def process_stock_data_for_day(day, stock_code, all_stocks):
+    stock_data = all_stocks.loc[stock_code, day].copy()
+    stock_data = stock_data.reset_index()
+    stock_data['day'] = day
+    stock_data['stock_code'] = stock_code
+    return stock_data
+
+def process_filtered_stocks(filtered_stocks_list, all_stocks):
+    filtered_stocks_data = []
+    for day in filtered_stocks_list.index:
+        print(f"Processing day: {day}")
+        for stock_code in filtered_stocks_list.loc[day, 'stock_list']:
+            stock_data = all_stocks.loc[stock_code, day].copy()
+            stock_data = stock_data.reset_index()
+            stock_data['day'] = day
+            stock_data['stock_code'] = stock_code
+            filtered_stocks_data.append(stock_data)
+    filtered_stocks_data = pd.concat(filtered_stocks_data, ignore_index=True)
     
-    #%%
+    # #######
+    # # 定義要處理的任務
+    # tasks = []
+    # for day in filtered_stocks_list.index:
+    #     print(f"Preparing tasks for day: {day}")
+    #     for stock_code in filtered_stocks_list.loc[day, 'stock_list']:
+    #         tasks.append((day, stock_code))
+    
+    # # 使用多線程並行處理
+    # with ThreadPoolExecutor() as executor:
+    #     # 提交任務並收集結果
+    #     results = list(executor.map(
+    #         lambda task: process_stock_data_for_day(task[0], task[1], all_stocks), tasks
+    #         ))
+    
+    # # 將結果合併
+    # filtered_stocks_data = pd.concat(results, ignore_index=True)
+    # #######
+    
+    
+    filtered_stocks_data.set_index(['day', 'stock_code', 'ts'], inplace=True)
+    filtered_stocks_data = filtered_stocks_data.sort_index()
+    return filtered_stocks_data
+
+if __name__ == "__main__":
+    # Define file paths
+    mid_stocks_list_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/mid_stocks_list.feather')
+    all_stocks_daily_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/all_stocks_daily.parquet')
+    filtered_stocks_list_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/filtered_stocks_list.parquet')
+    
     # Define parameters
-    start_date, end_date = '2023-01-01', '2024-10-14'
+    start_date, end_date = '2023-10-01', '2024-10-14'
     top_n = 100
     offset_days = 3
     offset_days_2 = 3
@@ -149,6 +191,7 @@ if __name__ == "__main__":
     
     filtered_stocks_df = filter_stocks_by_trading_days(filtered_stocks_df, start_date, end_date)
     
+    # Generate criteria DataFrames
     top_ret_criteria = create_top_ret(filtered_stocks_df, offset_days, top_n)
     new_high_criteria = create_new_high(filtered_stocks_df, offset_days_2)
     vol_amount_criteria = create_filtered_by_vol_and_amount(filtered_stocks_df, offset_days_3)
@@ -163,19 +206,11 @@ if __name__ == "__main__":
     filtered_stocks_list.to_parquet(filtered_stocks_list_path)
     
     #%%
+    filtered_stocks_data_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/filtered_stocks_data.parquet')
+    all_stocks_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/all_stocks.parquet')
     all_stocks = pd.read_parquet(all_stocks_path)
-    filtered_stocks_data = []
-    for day in filtered_stocks_list.index:
-        for stock_code in filtered_stocks_list.loc[day, 'stock_list']:
-            stock_data = all_stocks.loc[stock_code, day].copy()
-            stock_data = stock_data.reset_index()
-            stock_data['day'] = day
-            stock_data['stock_code'] = stock_code
-            print(f"Processing day: {day}, stock_code: {stock_code}")
-            filtered_stocks_data.append(stock_data)
-    filtered_stocks_data = pd.concat(filtered_stocks_data, ignore_index=True)
-    filtered_stocks_data.set_index(['day', 'stock_code', 'ts'], inplace=True)
-    filtered_stocks_data = filtered_stocks_data.sort_index()
+    filtered_stocks_data = process_filtered_stocks(filtered_stocks_list, all_stocks)
+    
     print(filtered_stocks_data)
     filtered_stocks_data.to_parquet(filtered_stocks_data_path)
     
