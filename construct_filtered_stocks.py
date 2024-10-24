@@ -172,9 +172,9 @@ def process_filtered_stocks(filtered_stocks_list, all_stocks):
 
 if __name__ == "__main__":
     # Define file paths
-    mid_stocks_list_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/mid_stocks_list.feather')
-    all_stocks_daily_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/all_stocks_daily.parquet')
-    filtered_stocks_list_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/filtered_stocks_list.parquet')
+    mid_stocks_list_path = Path('***') # path of 'mid_stocks_list.feather'
+    all_stocks_daily_path = Path('***') # path of 'all_stocks_daily.parquet'
+    filtered_stocks_list_path = Path('***') # path of 'filtered_stocks_list.parquet'
     
     # Define parameters
     start_date, end_date = '2023-10-01', '2024-10-14'
