@@ -175,6 +175,8 @@ if __name__ == "__main__":
     mid_stocks_list_path = Path('***') # path of 'mid_stocks_list.feather'
     all_stocks_daily_path = Path('***') # path of 'all_stocks_daily.parquet'
     filtered_stocks_list_path = Path('***') # path of 'filtered_stocks_list.parquet'
+    filtered_stocks_data_path = Path('***') # path of 'filtered_stocks_data.parquet'
+    all_stocks_path = Path('***') # path of 'all_stocks.parquet'
     
     # Define parameters
     start_date, end_date = '2023-10-01', '2024-10-14'
@@ -206,8 +208,6 @@ if __name__ == "__main__":
     filtered_stocks_list.to_parquet(filtered_stocks_list_path)
     
     #%%
-    filtered_stocks_data_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/filtered_stocks_data.parquet')
-    all_stocks_path = Path('/Users/jack/Documents/Quant/Code/TW_stocks/all_stocks.parquet')
     all_stocks = pd.read_parquet(all_stocks_path)
     filtered_stocks_data = process_filtered_stocks(filtered_stocks_list, all_stocks)
     
