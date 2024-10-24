@@ -137,8 +137,8 @@ def plot_monthly_heatplot(series_per_month: pd.Series, title_str: str):
     plt.show()
     
 if __name__ == "__main__":
-    filtered_stocks_list_path = Path('***') # path of 'filtered_stocks_list.parquet'
-    filtered_stocks_data_path = Path('***') # path of 'filtered_stocks_data.parquet'
+    filtered_stocks_list_path = Path('***') # exist path of 'filtered_stocks_list.parquet'
+    filtered_stocks_data_path = Path('***') # exist path of 'filtered_stocks_data.parquet'
     
     filtered_stocks_list = pd.read_parquet(filtered_stocks_list_path)
     filtered_stocks_data = pd.read_parquet(filtered_stocks_data_path)
