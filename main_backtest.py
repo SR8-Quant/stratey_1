@@ -54,6 +54,7 @@ def execute_strategy_on_single(
 
     return equity
 
+#%%
 def backtest(
         filtered_stocks_list: pd.DataFrame,
         filtered_stocks_data: pd.DataFrame,
@@ -91,6 +92,7 @@ def backtest(
     ret_series.index = pd.to_datetime(ret_series.index)
     return ret_series
 
+#%%
 def plot_ret_distribution(ret_series: pd.Series, start_date: str, end_date: str, title_str: str):
     mean_ret = np.mean(ret_series)
     q1 = np.percentile(ret_series, 25)
@@ -165,7 +167,8 @@ def calculate_daily_metrics(ret_series: pd.Series) -> dict:
     pl_ratio_per_trade = mean_profit_trades / mean_loss_trades if mean_loss_trades > 0 else np.inf
     
     trade_count = len(ret_series)
-    
+
+
     #%%
     ret_per_day = ret_per_trade.groupby(ret_per_trade.index).sum()
     
@@ -218,8 +221,74 @@ def calculate_daily_metrics(ret_series: pd.Series) -> dict:
         'Sortino ratio': sortino_ratio,
     }
 
+#%%
+def plot_daily_equity(equity: pd.Series):
+    # Calculate drawdown
+    equity_cummax = equity.cummax()
+    DDs = (equity_cummax - equity) / equity_cummax
+
+    # Identify new high points
+    new_highs = (equity == equity_cummax)
+
+    # Find drawdown periods
+    DD_periods = DDs > 0
+    
+    # Find drawdown start and end indices
+    DD_starts = np.where((~DD_periods[:-1]) & (DD_periods[1:]))[0] + 1
+    DD_ends = np.where((DD_periods[:-1]) & (~DD_periods[1:]))[0] + 1
+
+    # If drawdown starts at the beginning
+    if DD_periods.iloc[0]:
+        DD_starts = np.insert(DD_starts, 0, 0)
+
+    # If drawdown ends after the last data point
+    if DD_periods.iloc[-1]:
+        DD_ends = np.append(DD_ends, len(DDs) - 1)
+    
+    open_time = equity.index
+    # Calculate maximum drawdowns and durations
+    mdds = []
+    for start, end in zip(DD_starts, DD_ends):
+        MDD = np.max(DDs[start:end+1])
+        duration = (open_time[end] - open_time[start]).astype('timedelta64[m]').astype(int)
+        mdds.append({'start': start, 'end': end, 'mdd': MDD, 'duration': duration})
+
+    # Sort by duration (longest first)
+    MDDs_sorted = sorted(mdds, key=lambda x: x['duration'], reverse=True)
+    top_MDDs = MDDs_sorted[:5]
+
+    # Plotting
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True,
+                                   gridspec_kw={'height_ratios': [3, 1]})
+    ax1.plot(equity, label='Equity Curve', linewidth=1)
+
+    # Corrected scatter to use index values for the new highs
+    ax1.scatter(equity.index[new_highs], equity[new_highs], color='green', marker='^', label='New Highs')
+
+    # Highlight top five longest drawdown areas
+    for MDD_info in top_MDDs:
+        start_idx = MDD_info['start']
+        end_idx = MDD_info['end']
+        ax1.axvspan(open_time[start_idx], open_time[end_idx], color='red', alpha=0.2)
+
+    ax1.set_title('Equity Curve vs Buy&Hold')
+    ax1.set_ylabel('Normalized Return')
+    ax1.legend()
+    ax1.grid(True)
+
+    # Underwater plot, corrected fill_between
+    ax2.fill_between(equity.index, 0, -DDs, color='blue', alpha=0.5)
+    ax2.set_title('Underwater Plot (Drawdown)')
+    ax2.set_ylabel('Drawdown')
+    ax2.set_xlabel('Time')
+    ax2.grid(True)
+
+    plt.tight_layout()
+    plt.show()
+
+#%%
 if __name__ == "__main__":
-    filtered_stocks_list_path = Path('***') # exist path of 'filtered_stocks_list.parquet'
+    filtered_stocks_list_path = Path('***') # exist path of 'filtered_stocks_list.parquet' 
     filtered_stocks_data_path = Path('***') # exist path of 'filtered_stocks_data.parquet'
     
     filtered_stocks_list = pd.read_parquet(filtered_stocks_list_path)
@@ -260,3 +329,8 @@ if __name__ == "__main__":
         else:
             # 若 value 是其他類型，直接輸出
             print(f"{key:<{key_width}} {value:<{value_width}}")
+    
+    #%%
+    equity = ret_per_day.cumsum()
+    plot_daily_equity(equity)
+    
