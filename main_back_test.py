@@ -11,7 +11,7 @@ def execute_strategy_on_single(
         ts_np: np.array,
         open_np: np.array,
         close_np: np.array,
-        initial_cap: int = 1e6, 
+        initial_cap: int = 1e6,
         stop_loss_pct: float = 0.01,
         earliest_entry_time: str = '09:06',
         ) -> np.array:
@@ -19,24 +19,26 @@ def execute_strategy_on_single(
     open_np *= 1000
     close_np *= 1000
     
-    earliest_entry_idx = np.searchsorted(ts_np, earliest_entry_time)
-    partial_exit_idx_1 = np.searchsorted(ts_np, '11:00')
-    partial_exit_idx_2 = np.searchsorted(ts_np, '13:00')
-    partial_exit_idx_3 = np.searchsorted(ts_np, '13:30')
+    earliest_entry_idx = np.searchsorted(ts_np, earliest_entry_time, side='left')
+    partial_exit_idx_1 = np.searchsorted(ts_np, '11:00', side='left')
+    partial_exit_idx_2 = np.searchsorted(ts_np, '13:00', side='left')
+    partial_exit_idx_3 = np.searchsorted(ts_np, '13:30', side='left')
     
     equity = np.full(idx_len, np.nan, dtype=float)
     
-    entry_price = open_np[earliest_entry_idx - 1]
+    entry_price = open_np[earliest_entry_idx]
     initial_position = np.floor(initial_cap / (entry_price * 1.000399))
     to_close_position = np.floor(initial_position / 3)
     position = initial_position
     cap = initial_cap - position * entry_price
+    
+    earliest_entry_idx += 1
     equity[0 : earliest_entry_idx] = initial_cap
 
     for i in range(earliest_entry_idx, idx_len):
-        exit_price = open_np[i]
         if position > 0:
-            if close_np[i] > entry_price * (1 + stop_loss_pct) or i >= partial_exit_idx_3:
+            exit_price = open_np[i]
+            if close_np[i-1] > entry_price * (1 + stop_loss_pct) or i >= partial_exit_idx_3:
                 cap += position * (2 * entry_price - exit_price * 1.003399)
                 position = 0
             elif i == partial_exit_idx_1 or i == partial_exit_idx_2:
@@ -103,10 +105,10 @@ def plot_distribution(lst: pd.Series, start_date: str, end_date: str, title_str:
     plt.hist(lst, bins=60, edgecolor='k', alpha=0.7)
     
     # plt.axvline(0, color='black', linestyle='-')
-    plt.axvline(mean_ret, color='r', linestyle='-', label=f'Mean: {mean_ret * 1000:.2f}\u2030')
-    plt.axvline(q1, color='blue', linestyle='-', label=f'Q1: {q1 * 1000:.2f}\u2030')
-    plt.axvline(median, color='blue', linestyle='-', label=f'Q2: {median * 1000:.2f}\u2030')
-    plt.axvline(q3, color='blue', linestyle='-', label=f'Q3: {q3 * 1000:.2f}\u2030')
+    plt.axvline(mean_ret, color='r', linestyle='-', label=f'Mean: {mean_ret * 100:.2f}%')
+    plt.axvline(q1, color='blue', linestyle='-', label=f'Q1: {q1 * 100:.2f}%')
+    plt.axvline(median, color='blue', linestyle='-', label=f'Q2: {median * 100:.2f}%')
+    plt.axvline(q3, color='blue', linestyle='-', label=f'Q3: {q3 * 100:.2f}%')
     
     win_rate_label = f'WR: {sum(lst > 0)}/{len(lst)} = {win_rate * 100:.2f}%'
     pl_ratio_label = f'PL: {mean_profit*100:.2f}%/{mean_loss*100:.2f}% = {pl_ratio:.2f}'
@@ -143,7 +145,7 @@ if __name__ == "__main__":
     filtered_stocks_list = pd.read_parquet(filtered_stocks_list_path)
     filtered_stocks_data = pd.read_parquet(filtered_stocks_data_path)
 
-    start_date = '2023-01-01'
+    start_date = '2024-01-01'
     end_date = '2024-10-14'
     start_date_dt = datetime.strptime(start_date, '%Y-%m-%d')
     end_date_dt = datetime.strptime(end_date, '%Y-%m-%d')
@@ -158,3 +160,4 @@ if __name__ == "__main__":
     plot_distribution(ret_per_day, start_date, end_date,
                       'Distribution of Returns / day')                    
     plot_monthly_heatplot(ret_per_month, 'Monthly Return Heatmap')
+
