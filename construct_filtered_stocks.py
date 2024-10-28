@@ -72,35 +72,34 @@ def create_new_high(
     
     return criteria
 
+def create_higher(
+        stocks_df: pd.DataFrame,
+        threshold: float
+        ) -> pd.DataFrame:
+    # Extract 'Close' and 'High' columns from the multi-index DataFrame
+    close_df = stocks_df.xs('Close', axis=1, level=1)
+    open_df = stocks_df.xs('Open', axis=1, level=1)
+    
+    # Criteria: The previous day's Close is higher than the maximum High over the past offset_days
+    criteria = open_df.shift(1) >= close_df.shift(2) * (1 + threshold)
+    
+    return criteria
+
 def create_filtered_by_vol_and_amount(
         stocks_df: pd.DataFrame,
         offset_days: int = 3
         ) -> pd.DataFrame:
-    """
-    Create a criteria DataFrame based on Volume and Amount thresholds.
-    
-    Parameters:
-    - stocks_df: pd.DataFrame, Multi-index columns with 'Volume' and 'Amount'
-    - offset_days: int, number of days for rolling average in volume criteria
-    
-    Returns:
-    - pd.DataFrame: A boolean DataFrame where True indicates the stock meets the volume and amount criteria
-    """
     # Extract 'Volume' and 'Amount' columns
     volume_df = stocks_df.xs('Volume', axis=1, level=1)
     amount_df = stocks_df.xs('Amount', axis=1, level=1)
     
-    # Criterion 1: Volume on the previous day is greater than 3 times the average volume over the past offset_days
     criteria_1 = volume_df.shift(1) > 3 * volume_df.shift(2).rolling(window=offset_days).mean()
-    
-    # Criterion 2: Volume on the previous day is greater than 1000
-    criteria_2 = volume_df.shift(1) > 2000
-    
-    # Criterion 3: Amount on the previous day is greater than 1 billion
-    criteria_3 = amount_df.shift(1) > 1e8
+    criteria_2 = volume_df.shift(1) > 3000
+    criteria_3 = amount_df.shift(1).rolling(window=5).mean() > 1000
+    criteria_4 = amount_df.shift(1) > 1e8
     
     # Combine all criteria: A stock must satisfy all three criteria to be selected
-    combined_criteria = criteria_1 & criteria_2 & criteria_3
+    combined_criteria = criteria_1 & criteria_2 & criteria_3 & criteria_4
     
     return combined_criteria
 
