@@ -152,9 +152,9 @@ def calculate_equity_metrics(total_investment: int, equity_series: pd.Series) ->
 
     return {
         'Total investment': int(total_investment),
-        'RoR': total_ror,
-        'Return mean': rets_mean,
-        'Return volatility': rets_std,
+        'Total RoR': total_ror,
+        'RoR mean': rets_mean,
+        'RoR volatility': rets_std,
         'MDD': equity_MDD,
         'Sharpe ratio': sharpe_ratio,
         'Sortino ratio': sortino_ratio,
