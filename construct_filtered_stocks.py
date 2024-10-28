@@ -2,13 +2,11 @@ import pandas as pd
 from pathlib import Path
 from typing import List
 import pandas_market_calendars as mcal
-from concurrent.futures import ThreadPoolExecutor
 
 def filter_stocks_by_list(
         stocks_df: pd.DataFrame,
         stocks_list: List[str]
     ) -> pd.DataFrame:
-    """Filter stocks_df to retain only rows where the 'StockCode' in the MultiIndex is in the stocks_list."""
     filtered_stocks_df = stocks_df[stocks_df.index.get_level_values(0).isin(stocks_list)]
     return filtered_stocks_df
 
@@ -45,6 +43,8 @@ def create_top_ret(
     ret_df = close_df.pct_change(periods=offset_days, fill_method=None).shift(1)
     
     criteria_df = pd.DataFrame(False, index=ret_df.index, columns=ret_df.columns)
+    
+    # print(criteria_df)
     
     # Iterate over each trading day to identify top N stocks
     for date, row in ret_df.iterrows():
@@ -89,12 +89,22 @@ def create_filtered_by_vol_and_amount(
         stocks_df: pd.DataFrame,
         offset_days: int = 3
         ) -> pd.DataFrame:
+    """
+    Create a criteria DataFrame based on Volume and Amount thresholds.
+    
+    Parameters:
+    - stocks_df: pd.DataFrame, Multi-index columns with 'Volume' and 'Amount'
+    - offset_days: int, number of days for rolling average in volume criteria
+    
+    Returns:
+    - pd.DataFrame: A boolean DataFrame where True indicates the stock meets the volume and amount criteria
+    """
     # Extract 'Volume' and 'Amount' columns
     volume_df = stocks_df.xs('Volume', axis=1, level=1)
     amount_df = stocks_df.xs('Amount', axis=1, level=1)
     
     criteria_1 = volume_df.shift(1) > 3 * volume_df.shift(2).rolling(window=offset_days).mean()
-    criteria_2 = volume_df.shift(1) > 3000
+    criteria_2 = volume_df.shift(1) > 2000
     criteria_3 = amount_df.shift(1).rolling(window=5).mean() > 1000
     criteria_4 = amount_df.shift(1) > 1e8
     
@@ -135,11 +145,10 @@ def process_stock_data_for_day(day, stock_code, all_stocks):
 
 def process_filtered_stocks(filtered_stocks_list, all_stocks):
     filtered_stocks_data = []
-
-    #########
-    # no parellel
+    
+    ###
     for day in filtered_stocks_list.index:
-        print(f"Processing day: {day}")
+        # print(f"Processing day: {day}")
         for stock_code in filtered_stocks_list.loc[day, 'stock_list']:
             stock_data = all_stocks.loc[stock_code, day].copy()
             stock_data = stock_data.reset_index()
@@ -147,28 +156,6 @@ def process_filtered_stocks(filtered_stocks_list, all_stocks):
             stock_data['stock_code'] = stock_code
             filtered_stocks_data.append(stock_data)
     filtered_stocks_data = pd.concat(filtered_stocks_data, ignore_index=True)
-    #########
-    
-    # #######
-    # parellel
-    # # 定義要處理的任務
-    # tasks = []
-    # for day in filtered_stocks_list.index:
-    #     print(f"Preparing tasks for day: {day}")
-    #     for stock_code in filtered_stocks_list.loc[day, 'stock_list']:
-    #         tasks.append((day, stock_code))
-    
-    # # 使用多線程並行處理
-    # with ThreadPoolExecutor() as executor:
-    #     # 提交任務並收集結果
-    #     results = list(executor.map(
-    #         lambda task: process_stock_data_for_day(task[0], task[1], all_stocks), tasks
-    #         ))
-    
-    # # 將結果合併
-    # filtered_stocks_data = pd.concat(results, ignore_index=True)
-    # #######
-    
     
     filtered_stocks_data.set_index(['day', 'stock_code', 'ts'], inplace=True)
     filtered_stocks_data = filtered_stocks_data.sort_index()
@@ -183,11 +170,12 @@ if __name__ == "__main__":
     filtered_stocks_data_path = Path('***') # construct path of 'filtered_stocks_data.parquet'
     
     # Define parameters
-    start_date, end_date = '2023-10-01', '2024-10-14'
+    start_date, end_date = '2023-08-01', '2024-10-14'
     top_n = 100
     offset_days = 3
     offset_days_2 = 3
     offset_days_3 = 3
+    threshold = 0.001
     
     # Load stock lists and data
     mid_stocks_list = pd.read_feather(mid_stocks_list_path)['stock_code'].astype(str).tolist()
@@ -201,21 +189,24 @@ if __name__ == "__main__":
     top_ret_criteria = create_top_ret(filtered_stocks_df, offset_days, top_n)
     new_high_criteria = create_new_high(filtered_stocks_df, offset_days_2)
     vol_amount_criteria = create_filtered_by_vol_and_amount(filtered_stocks_df, offset_days_3)
-
+    higher_criteria = create_higher(filtered_stocks_df, threshold)
+    
     # Combine all criteria to find common stocks
     filtered_stocks_list = criterion_to_list(
         filtered_stocks_df,
         top_ret_criteria,
         new_high_criteria,
-        vol_amount_criteria
+        vol_amount_criteria,
+        higher_criteria
     )
     filtered_stocks_list.to_parquet(filtered_stocks_list_path)
+    print(filtered_stocks_list[filtered_stocks_list['stock_list'].apply(lambda x: len(x) > 0)])
     
     #%%
     all_stocks = pd.read_parquet(all_stocks_path)
     filtered_stocks_data = process_filtered_stocks(filtered_stocks_list, all_stocks)
     
-    print(filtered_stocks_data)
+    # print(filtered_stocks_data)
     filtered_stocks_data.to_parquet(filtered_stocks_data_path)
     
     
