@@ -1,7 +1,7 @@
 import psycopg2
 
 db_config = {
-    'host': '120.126.194.247',
+    'host': '***',
     'port': 5432,
     'database': 'postgres',  # 替換為你的資料庫名稱
     'user': 'aden',
