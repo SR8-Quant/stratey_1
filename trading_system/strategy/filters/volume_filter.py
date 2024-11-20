@@ -1,5 +1,4 @@
-# strategy/filters/volume_filter.py
-from typing import Dict, Optional
+from typing import Dict, Any
 import pandas as pd
 from datetime import datetime
 from data.models import StockData
@@ -18,14 +17,34 @@ class VolumeFilter:
         historical_volume: pd.Series,
         remaining_minutes: int
     ) -> float:
-        """Calculate estimated end-of-day volume"""
+        """
+        Calculate estimated end-of-day volume.
+        :param current_volume: Current volume so far.
+        :param historical_volume: Historical volume data as a Series.
+        :param remaining_minutes: Number of minutes left in the trading session.
+        :return: Estimated total volume by end-of-day.
+        """
+        # TODO:
+        # 1. Calculate the average volume per minute from `historical_volume`.
+        # 2. Multiply the average volume by `remaining_minutes`.
+        # 3. Add the `current_volume` to the projected volume for the remaining minutes.
+        # 4. Return the estimated total end-of-day volume.
         pass
     
     def calculate_volume_profile(
         self,
         historical_data: pd.DataFrame
     ) -> pd.DataFrame:
-        """Calculate volume profile"""
+        """
+        Calculate volume profile.
+        :param historical_data: Historical stock data as a DataFrame.
+        :return: A DataFrame with volume profile information.
+        """
+        # TODO:
+        # 1. Group `historical_data` by price levels or intervals.
+        # 2. Calculate the total volume traded at each price level.
+        # 3. Normalize the volume data if required for better visualization.
+        # 4. Return a DataFrame containing the volume profile.
         pass
     
     def check_volume_surge(
@@ -33,7 +52,16 @@ class VolumeFilter:
         current_volume: float,
         avg_volume: float
     ) -> bool:
-        """Check volume surge condition"""
+        """
+        Check volume surge condition.
+        :param current_volume: Current trading volume.
+        :param avg_volume: Average historical trading volume.
+        :return: True if a volume surge condition is met, otherwise False.
+        """
+        # TODO:
+        # 1. Calculate the ratio of `current_volume` to `avg_volume`.
+        # 2. Compare the ratio with `self.volume_surge_ratio`.
+        # 3. Return True if the ratio exceeds the surge threshold, otherwise False.
         pass
     
     def check_minimum_volume(
@@ -41,7 +69,16 @@ class VolumeFilter:
         volume: float,
         amount: float
     ) -> bool:
-        """Check minimum volume condition"""
+        """
+        Check minimum volume condition.
+        :param volume: Current trading volume.
+        :param amount: Current trading amount.
+        :return: True if both volume and amount meet the minimum thresholds, otherwise False.
+        """
+        # TODO:
+        # 1. Compare `volume` with `self.min_volume`.
+        # 2. Compare `amount` with `self.min_amount`.
+        # 3. Return True if both conditions are satisfied, otherwise False.
         pass
     
     def apply_filter(
@@ -49,5 +86,15 @@ class VolumeFilter:
         stock_data: StockData,
         historical_data: pd.DataFrame
     ) -> bool:
-        """Apply all volume filters"""
+        """
+        Apply all volume filters.
+        :param stock_data: Current stock data.
+        :param historical_data: Historical stock data.
+        :return: True if all volume conditions are satisfied, otherwise False.
+        """
+        # TODO:
+        # 1. Estimate the end-of-day volume using `calculate_estimated_volume`.
+        # 2. Check the volume surge condition using `check_volume_surge`.
+        # 3. Check the minimum volume condition using `check_minimum_volume`.
+        # 4. Combine the results of all filters and return True if all conditions are met.
         pass

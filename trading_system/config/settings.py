@@ -9,10 +9,10 @@ class TradingConfig:
     
     # Database settings
     DB_CONFIG: Dict[str, Any] = {
-        'host': 'localhost',
-        'database': 'trading_db',
-        'user': 'trader',
-        'password': 'your_password',
+        'host': '120.126.194.247',
+        'database': 'postgres',
+        'user': 'aden',
+        'password': 'sr8aden',
         'port': 5432
     }
     

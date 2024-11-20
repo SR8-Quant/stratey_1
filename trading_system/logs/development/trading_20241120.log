@@ -1,0 +1,19 @@
+2024-11-20 19:22:53,129 - trading_system - INFO - Trading system initializing in development environment
+2024-11-20 19:22:53,129 - trading_system - INFO - Root directory: /Users/mouyasushi/Desktop/sr8/stratey_1/trading_system
+2024-11-20 19:22:53,129 - trading_system - INFO - Log directory: /Users/mouyasushi/Desktop/sr8/stratey_1/trading_system/logs/development
+2024-11-20 19:23:10,881 - trading_system - INFO - Trading system initializing in development environment
+2024-11-20 19:23:10,882 - trading_system - INFO - Root directory: /Users/mouyasushi/Desktop/sr8/stratey_1/trading_system
+2024-11-20 19:23:10,882 - trading_system - INFO - Log directory: /Users/mouyasushi/Desktop/sr8/stratey_1/trading_system/logs/development
+2024-11-20 19:23:10,888 - trading_system - INFO - This is an info message
+2024-11-20 19:23:10,888 - trading_system - WARNING - This is a warning message
+2024-11-20 19:23:10,888 - trading_system - ERROR - This is an error message
+2024-11-20 19:23:10,888 - trading_system - INFO - Trade executed: Type=BUY | Symbol=AAPL | Price=150.0 | Quantity=100 | Total=15000.00
+2024-11-20 19:23:10,888 - test_logger - INFO - Test log message
+2024-11-20 19:24:10,007 - trading_system - INFO - Trading system initializing in development environment
+2024-11-20 19:24:10,007 - trading_system - INFO - Root directory: /Users/mouyasushi/Desktop/sr8/stratey_1/trading_system
+2024-11-20 19:24:10,007 - trading_system - INFO - Log directory: /Users/mouyasushi/Desktop/sr8/stratey_1/trading_system/logs/development
+2024-11-20 19:24:10,012 - trading_system - INFO - This is an info message
+2024-11-20 19:24:10,012 - trading_system - WARNING - This is a warning message
+2024-11-20 19:24:10,012 - trading_system - ERROR - This is an error message
+2024-11-20 19:24:10,012 - trading_system - INFO - Trade executed: Type=BUY | Symbol=AAPL | Price=150.0 | Quantity=100 | Total=15000.00
+2024-11-20 19:24:10,013 - test_logger - INFO - Test log message
