@@ -23,6 +23,9 @@ def load_stock_data(
     )
     stock_df.set_index('ts', inplace=True)
     return stock_df
+
+
+
 def resample_to_daily(
         stock_code: str,
         stock_df: pd.DataFrame,
@@ -95,16 +98,16 @@ def combine_stock_data(
     
     return all_stocks.sort_index(), all_stocks_daily.sort_index()
 
-if __name__ == "__main__":
-    data_folder = Path('***') # exist path of 'k_data/永豐'
-    all_stocks_path = Path('***') # construct path of 'all_stocks.parquet'
-    all_stocks_daily_path = Path('***') # construct path of 'all_stocks_daily.parquet'
-    start_date, end_date = '2021-01-01', '2024-10-14'
+# if __name__ == "__main__":
+#     data_folder = Path('***') # exist path of 'k_data/永豐'
+#     all_stocks_path = Path('***') # construct path of 'all_stocks.parquet'
+#     all_stocks_daily_path = Path('***') # construct path of 'all_stocks_daily.parquet'
+#     start_date, end_date = '2021-01-01', '2024-10-14'
 
-    # Combine all stock data into one DataFrame
-    all_stocks, all_stocks_daily = combine_stock_data(data_folder, start_date, end_date)
-    print(all_stocks)
-    print(all_stocks_daily)
-    # Optionally, save the combined DataFrame to a Parquet file
-    all_stocks.to_parquet(all_stocks_path)
-    all_stocks_daily.to_parquet(all_stocks_daily_path)
+#     # Combine all stock data into one DataFrame
+#     all_stocks, all_stocks_daily = combine_stock_data(data_folder, start_date, end_date)
+#     print(all_stocks)
+#     print(all_stocks_daily)
+#     # Optionally, save the combined DataFrame to a Parquet file
+#     all_stocks.to_parquet(all_stocks_path)
+#     all_stocks_daily.to_parquet(all_stocks_daily_path)
