@@ -18,7 +18,10 @@ class VolumeFilter:
         remaining_minutes: int
     ) -> float:
         """
-        Calculate estimated end-of-day volume.
+        實踐估計量 : 目前可以先用XQ估計量 
+        XQ估計量 = 開盤迄今實際總量+ 預估單量*離收盤時間
+        預估單量= 近期均值(260天均值,收盤時間分割為1分鐘為單位。)
+
         :param current_volume: Current volume so far.
         :param historical_volume: Historical volume data as a Series.
         :param remaining_minutes: Number of minutes left in the trading session.
@@ -36,14 +39,14 @@ class VolumeFilter:
         historical_data: pd.DataFrame
     ) -> pd.DataFrame:
         """
-        Calculate volume profile.
+        計算交易量分佈(Volume Profile), 顯示在不同價格區間的交易活躍程度。
         :param historical_data: Historical stock data as a DataFrame.
         :return: A DataFrame with volume profile information.
         """
         # TODO:
         # 1. Group `historical_data` by price levels or intervals.
-        # 2. Calculate the total volume traded at each price level.
-        # 3. Normalize the volume data if required for better visualization.
+        # 2. Sum up  total volume traded at each price level.
+        # 3. Normalize the volume data if required for better visualization ( optinonal )
         # 4. Return a DataFrame containing the volume profile.
         pass
     
@@ -70,7 +73,7 @@ class VolumeFilter:
         amount: float
     ) -> bool:
         """
-        Check minimum volume condition.
+        篩掉流動性不足的股票 
         :param volume: Current trading volume.
         :param amount: Current trading amount.
         :return: True if both volume and amount meet the minimum thresholds, otherwise False.

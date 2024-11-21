@@ -49,6 +49,7 @@ class MarketFilter:
         trades: List[Trade]
     ) -> bool:
         """
+        (OPTIONAL)
         Check previous day's trading profit.     
         :param trades: A list of Trade objects from the previous day.
         :return: True if the previous day was profitable, otherwise False.

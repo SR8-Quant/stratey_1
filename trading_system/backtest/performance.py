@@ -4,6 +4,11 @@ import pandas as pd
 import numpy as np
 from data.models import Trade, Position
 
+"""  
+如果有好用的套件，如果有辦法清楚底層如何撰寫也可以拿來用
+"""
+
+
 class PerformanceAnalyzer:
     """Performance analysis implementation"""
     
