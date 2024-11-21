@@ -37,7 +37,7 @@ class MarketFilter:
         :param market_data: A DataFrame containing market data.
         :return: True if the volume condition is met, otherwise False.
         """
-        # TODO:
+        # TODO: 
         # 1. Extract the volume data from the `market_data` DataFrame.
         # 2. Retrieve the volume threshold from `self.params`.
         # 3. Compare the current volume to the threshold.
@@ -91,10 +91,15 @@ class MarketFilter:
         :param trades: A list of Trade objects.
         :return: A dictionary summarizing the results of all applied filters.
         """
-        # TODO:
+        # TODO: 
         # 1. Analyze the market trend using `analyze_market_trend`.
         # 2. Check the market volume condition using `check_market_volume`.
         # 3. Evaluate the previous day's profit using `check_previous_day_profit`.
         # 4. Calculate the position factor using `calculate_position_factor`.
         # 5. Combine all the results into a dictionary and return it.
         pass
+    
+    
+    
+    
+    

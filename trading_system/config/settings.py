@@ -28,7 +28,7 @@ class TradingConfig:
         'max_positions': 10  # 最大持倉數量
     }
     
-    # Time settings
+    # Time settings 
     TIME_SETTINGS: Dict[str, Any] = {
         'market_open': time(9, 0),
         'market_close': time(13, 30),

@@ -71,7 +71,7 @@ class VolumeFilter:
         self,
         volume: float,
         amount: float
-    ) -> bool:
+    ) -> bool: 
         """
         篩掉流動性不足的股票 
         :param volume: Current trading volume.
@@ -83,6 +83,7 @@ class VolumeFilter:
         # 2. Compare `amount` with `self.min_amount`.
         # 3. Return True if both conditions are satisfied, otherwise False.
         pass
+    
     
     def apply_filter(
         self,

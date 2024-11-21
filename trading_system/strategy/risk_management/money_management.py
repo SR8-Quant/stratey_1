@@ -27,7 +27,7 @@ class MoneyManager:
     
     def calculate_available_capital(
         self,
-        positions: Dict[str, Position],
+        positions: Dict[str, Position], 
         cash: float
     ) -> float:
         """
