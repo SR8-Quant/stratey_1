@@ -8,6 +8,9 @@ trading_system/
 │   ├── __init__.py
 
 │   ├── settings.py          # 系統配置（資料庫連接、交易參數等）
+      - 1. 
+      - 2. 
+      - 3. 
 
 │   └── logging_config.py    # 日誌配置
 
